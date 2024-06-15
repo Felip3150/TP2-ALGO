@@ -1,27 +1,228 @@
 package aed;
+import java.util.ArrayList;
 
-public class Trie<K,V> implements DiccionarioDigital<K,V>{
-    
-    public DiccionarioDigital<K, V> diccionarioVacio(){
-        throw new UnsupportedOperationException("No implementada aun");
+ 
+public class Trie<K,V> implements Diccionario<K,V>{
+    Nodo raiz;
+    int tamanio;
+
+    /*
+     * Invariante de Representación del Trie:
+     * 
+     * No hay nodos inútiles: todos los nodos tienen un valor o tienen un descendiente con valor.
+     * No hay ciclos: si un nodo es descendiente de otro, la relación es unidireccional.
+     * No se puede llegar por dos claves al mismo nodo, cada nodo tiene un único padre.
+     * El tamanio se corresponde a la cantidad de nodos con valor en el Trie.
+     * 
+     */
+
+    private class Nodo {
+        ArrayList<Nodo> siguientes;
+        V valor;
+        Nodo padre;
+        char letra;
+
+        Nodo(){
+            valor = null;
+            siguientes = null;
+            this.padre = null;
+            this.letra = Character.MIN_VALUE;
+        }
+
+        Nodo ( Nodo padre, char letra){
+            this.valor = null;
+            siguientes = null;
+            this.padre = padre;
+            this.letra = letra;
+        }
+
+        public void crearSiguientes(){
+            siguientes = new ArrayList<>(256);
+            for (int i = 0; i < 256;i++){
+                siguientes.add(null);
+            }
+        }
+        
     }
+
+    public Trie(){
+        raiz = null;
+        tamanio = 0;
+    }
+
+
+    public Diccionario<K, V> diccionarioVacio(){
+        return new Trie<K,V>();   
+    }
+
+
+    public String[] obtenerClaves(){ //TODO
+        if(tamanio == 0) return new String[0];
+
+        String[] palabras = null;
+        palabras = agregarPalabras(raiz, palabras, "");
+
+        return palabras;
+    }
+
+    private String[] agregarPalabras(Nodo nodo, String[] palabras, String prefijo){
+        /* if (nodo == null) return palabras;
+        if (nodo.valor != null){
+            String agrego = "";
+            if(nodo.letra == Character.MIN_VALUE){
+                agrego = prefijo;
+            } else {
+                agrego = prefijo+nodo.letra;
+            }
+        }
+        if (nodo.siguientes != null) {
+           for (Nodo hijo: nodo.siguientes){
+                if (hijo != null){
+                    String busco = "";
+                    if(nodo.letra != Character.MIN_VALUE){
+                        busco = prefijo+nodo.letra;
+                    } else {
+                        busco = prefijo;
+                    }
+
+                    return palabras + agrego + agregarPalabras(hijo, palabras, busco);
+                }
+            } 
+        } */
+        return new String[0];
+    }
+
     public boolean esta(K clave){
-        throw new UnsupportedOperationException("No implementada aun");
+        String key = (String) clave;
+        
+        if (raiz == null) {
+            return false;
+        }
+        Nodo actual = raiz;
+        
+        for (char c : key.toCharArray()) {
+            int i = (int) c;
+            if (actual.siguientes == null) return false;
+            
+            if (actual.siguientes.get(i) == null){
+                return false;
+            
+            } else {
+                actual = actual.siguientes.get(i);
+            }
+
+        }
+        
+        return actual.valor != null;
     }
+
     public void definir(K clave, V valor){
-        throw new UnsupportedOperationException("No implementada aun");
+        if (!esta(clave)) tamanio+=1;
+        
+        String key = (String) clave;
+
+        if (raiz == null) {
+            raiz = new Nodo();
+        }
+
+        Nodo actual = raiz;
+
+        for (int i = 0; i < key.length(); i++){
+            char l = key.charAt(i);
+            int ascii = (int) l;
+            
+            if (actual.siguientes == null){
+                actual.crearSiguientes();
+            }
+            
+            if (actual.siguientes.get(ascii) == null) {
+                Nodo nuevo = new Nodo(actual, l);
+                actual.siguientes.set(ascii, nuevo);
+            }
+            
+            actual = actual.siguientes.get(ascii);
+        }
+
+        actual.valor = valor;
     }
-    public void definirRapido(K clave, V valor){
-        throw new UnsupportedOperationException("No implementada aun");
-    }
+
     public V obtener(K clave){
-        throw new UnsupportedOperationException("No implementada aun");
+        String key = (String) clave;
+ 
+        Nodo actual = raiz;
+        
+        for (char c : key.toCharArray()) {
+            int i = (int) c;
+            actual = actual.siguientes.get(i);
+        }
+        return actual.valor;
     }
+
+
+
     public void borrar(K clave){
-        throw new UnsupportedOperationException("No implementada aun");
+        tamanio--;
+        if(clave == "") {
+            raiz.valor = null;
+            if(!tieneHijos(raiz)){
+                raiz = null;
+            }
+            return;
+        }
+        String key = new String();
+        key = (String) clave;
+        Nodo nodoActual = raiz;
+        Nodo ultimoNodoUtil = nodoActual;
+        int j = (int) key.charAt(0);
+
+        for (int i = 0; i<key.length();i++){
+            int ascii = (int) key.charAt(i);
+            nodoActual = nodoActual.siguientes.get(ascii);
+
+            if (tieneMasDeUnHijo(nodoActual) || (nodoActual.valor != null && i != key.length()-1)){
+                ultimoNodoUtil = nodoActual;
+                if (i != key.length()-1) j = (int) key.charAt(i+1);
+                else j=-1;
+            }
+        }
+        
+        if (tieneHijos (nodoActual)){ 
+            nodoActual.valor = null;
+        } else if (j != -1){
+            ultimoNodoUtil.siguientes.set(j, null);
+        }
+    }
+    private boolean tieneHijos(Nodo nodo) {
+        ArrayList<Nodo> array = nodo.siguientes;
+
+        if (array == null) return false;
+
+        for (int i= 0;i<256; i++){
+            if (array.get(i) != null){
+                return true;
+            }
+        }
+        return false;
+    }
+    
+    private boolean tieneMasDeUnHijo(Nodo nodo) {
+        ArrayList<Nodo> array = nodo.siguientes;
+        int contador = 0;
+
+        if (array == null) return false;
+
+        for (int i= 0;i<256; i++){
+            if (array.get(i) != null){
+                contador ++;
+                if (contador>1){
+                    return true;
+                }
+            }
+        }
+        return false;
     }
     public int tamanio(){
-        throw new UnsupportedOperationException("No implementada aun");
+        return tamanio;
     }
 
 }
