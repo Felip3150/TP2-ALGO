@@ -60,36 +60,63 @@ public class Trie<K,V> implements Diccionario<K,V>{
         if(tamanio == 0) return new String[0];
 
         String[] palabras = null;
-        palabras = agregarPalabras(raiz, palabras, "");
+        palabras = agregarPalabras(raiz, "");
 
         return palabras;
     }
 
-    private String[] agregarPalabras(Nodo nodo, String[] palabras, String prefijo){
-        /* if (nodo == null) return palabras;
-        if (nodo.valor != null){
-            String agrego = "";
-            if(nodo.letra == Character.MIN_VALUE){
-                agrego = prefijo;
-            } else {
-                agrego = prefijo+nodo.letra;
-            }
+    private String concatenarLetra(String a, char b){
+        String res;
+        if(b == Character.MIN_VALUE){
+            res = a;
+        } else {
+            res = a+b;
         }
-        if (nodo.siguientes != null) {
-           for (Nodo hijo: nodo.siguientes){
-                if (hijo != null){
-                    String busco = "";
-                    if(nodo.letra != Character.MIN_VALUE){
-                        busco = prefijo+nodo.letra;
-                    } else {
-                        busco = prefijo;
-                    }
+        return res;
+    }
 
-                    return palabras + agrego + agregarPalabras(hijo, palabras, busco);
+    private String[] agregarPalabras(Nodo nodo, String prefijo){
+        int cantPalabrasLocales = 0;
+        if (nodo == null) return null;
+
+        String palabraLocal = "";
+        if (nodo.valor != null){ //este nodo es una palabra
+            palabraLocal = concatenarLetra(prefijo, nodo.letra);
+            cantPalabrasLocales = 1;
+        }
+
+        String[] hijosCompletos = new String[0];
+
+        if (nodo.siguientes != null) { //este nodo tiene hijos
+           for (Nodo hijo: nodo.siguientes){
+                if (hijo != null){ //si este hijo es no nulo, busco
+                    String busco = concatenarLetra(prefijo, nodo.letra);
+
+                    String[] hijos = agregarPalabras(hijo, busco);
+
+                    String[] nuevoHijosCompletos = new String[hijosCompletos.length + hijos.length];
+                    int i = 0;
+                    while (i < hijosCompletos.length){
+                        nuevoHijosCompletos[i] = hijosCompletos[i];
+                        i++;
+                    }
+                    for (int j = 0; j < hijos.length; j++){
+                        nuevoHijosCompletos[i+j] = hijos[j];
+                    }
+                    hijosCompletos = nuevoHijosCompletos;
                 }
             } 
-        } */
-        return new String[0];
+        } 
+        String[] resultado = new String[cantPalabrasLocales + hijosCompletos.length];
+        if (cantPalabrasLocales > 0){
+            resultado[0] = palabraLocal;
+        }
+
+        for (int i = 0; i < hijosCompletos.length; i++){
+            resultado[cantPalabrasLocales+i] = hijosCompletos[i];
+        }
+
+        return resultado;
     }
 
     public boolean esta(K clave){

@@ -1,7 +1,6 @@
 package aed;
 import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.BeforeEach;
 import java.util.Random;
 
 
@@ -42,7 +41,11 @@ public class TrieTests {
             newTrie.definir(palabras[i], i);
             assertEquals(true, newTrie.esta(palabras[i]));
         }
+        
         String[] bla = newTrie.obtenerClaves();
+        for (int i = 0; i < bla.length; i++){
+            System.out.println(bla[i]);
+        }
                 
         for(int i = 0; i < palabras.length; i++){
             assertEquals(i, newTrie.obtener(palabras[i]));
