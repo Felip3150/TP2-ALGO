@@ -19,20 +19,17 @@ public class Trie<K,V> implements Diccionario<K,V>{
     private class Nodo {
         ArrayList<Nodo> siguientes;
         V valor;
-        Nodo padre;
         char letra;
 
         Nodo(){
             valor = null;
             siguientes = null;
-            this.padre = null;
             this.letra = Character.MIN_VALUE;
         }
 
         Nodo ( Nodo padre, char letra){
             this.valor = null;
             siguientes = null;
-            this.padre = padre;
             this.letra = letra;
         }
 
@@ -56,13 +53,21 @@ public class Trie<K,V> implements Diccionario<K,V>{
     }
 
 
-    public String[] obtenerClaves(){ //TODO
+    public String[] obtenerClaves(){
         if(tamanio == 0) return new String[0];
 
-        String[] palabras = null;
-        palabras = agregarPalabras(raiz, "");
+        String[] palabras = new String[tamanio];
+        ArrayList<String> palabrasArr = obtenerPalabras(raiz, ""); 
 
+        //la función obtenerPalabras es O(1) cuando se la llama una vez, 
+        //pero en la recursión se llama una vez por nodo: O(cantNodos)
+
+        //convierto el arraylist a array - O(tamanio). tamanio < cantNodos
+        for (int i = 0; i < palabrasArr.size(); i++){
+            palabras[i] = palabrasArr.get(i);
+        }
         return palabras;
+        //la complejidad es O(cantNodos)
     }
 
     private String concatenarLetra(String a, char b){
@@ -75,7 +80,8 @@ public class Trie<K,V> implements Diccionario<K,V>{
         return res;
     }
 
-    private String[] agregarPalabras(Nodo nodo, String prefijo){
+    private ArrayList<String> obtenerPalabras(Nodo nodo, String prefijo){
+        //Estos checkeos son O(1)
         int cantPalabrasLocales = 0;
         if (nodo == null) return null;
 
@@ -85,38 +91,28 @@ public class Trie<K,V> implements Diccionario<K,V>{
             cantPalabrasLocales = 1;
         }
 
-        String[] hijosCompletos = new String[0];
+        ArrayList<String> hijosCompletos = new ArrayList<String>();
 
         if (nodo.siguientes != null) { //este nodo tiene hijos
-           for (Nodo hijo: nodo.siguientes){
+           for (Nodo hijo: nodo.siguientes){ //acá me fijo cada hijo: O(256) = O(1)
                 if (hijo != null){ //si este hijo es no nulo, busco
                     String busco = concatenarLetra(prefijo, nodo.letra);
 
-                    String[] hijos = agregarPalabras(hijo, busco);
+                    ArrayList<String> hijos = obtenerPalabras(hijo, busco); //obtengo los hijos. O(1) (justificación al fondo)
 
-                    String[] nuevoHijosCompletos = new String[hijosCompletos.length + hijos.length];
-                    int i = 0;
-                    while (i < hijosCompletos.length){
-                        nuevoHijosCompletos[i] = hijosCompletos[i];
-                        i++;
-                    }
-                    for (int j = 0; j < hijos.length; j++){
-                        nuevoHijosCompletos[i+j] = hijos[j];
-                    }
-                    hijosCompletos = nuevoHijosCompletos;
+                    //acá copio el array de los nuevos hijos encontrados y el array de los hijos 
+                    //ya encontrados en el mismo array.
+                    //esto tiene complejidad máxima de o(this.tamanio)
+                    hijosCompletos.addAll(hijos);
                 }
             } 
         } 
-        String[] resultado = new String[cantPalabrasLocales + hijosCompletos.length];
-        if (cantPalabrasLocales > 0){
-            resultado[0] = palabraLocal;
-        }
 
-        for (int i = 0; i < hijosCompletos.length; i++){
-            resultado[cantPalabrasLocales+i] = hijosCompletos[i];
-        }
+        if(cantPalabrasLocales > 0) hijosCompletos.add(0, palabraLocal);
 
-        return resultado;
+        return hijosCompletos;
+        
+        //la función, ejecutada una vez, es O(1)
     }
 
     public boolean esta(K clave){
