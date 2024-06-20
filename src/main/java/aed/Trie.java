@@ -33,7 +33,7 @@ public class Trie<K,V> implements Diccionario<K,V>{
             this.letra = letra;
         }
 
-        public void crearSiguientes(){
+        public void crearSiguientes(){ //O(1)
             siguientes = new ArrayList<>(256);
             for (int i = 0; i < 256;i++){
                 siguientes.add(null);
@@ -48,12 +48,12 @@ public class Trie<K,V> implements Diccionario<K,V>{
     }
 
 
-    public Diccionario<K, V> diccionarioVacio(){
+    public Diccionario<K, V> diccionarioVacio(){ //O(1)
         return new Trie<K,V>();   
     }
 
 
-    public String[] obtenerClaves(){
+    public String[] obtenerClaves(){ //O(Cant. de nodos)
         if(tamanio == 0) return new String[0];
 
         String[] palabras = new String[tamanio];
@@ -80,7 +80,7 @@ public class Trie<K,V> implements Diccionario<K,V>{
         return res;
     }
 
-    private ArrayList<String> obtenerPalabras(Nodo nodo, String prefijo){
+    private ArrayList<String> obtenerPalabras(Nodo nodo, String prefijo){ 
         //Estos checkeos son O(1)
         int cantPalabrasLocales = 0;
         if (nodo == null) return null;
@@ -102,7 +102,7 @@ public class Trie<K,V> implements Diccionario<K,V>{
 
                     //acá copio el array de los nuevos hijos encontrados y el array de los hijos 
                     //ya encontrados en el mismo array.
-                    //esto tiene complejidad máxima de o(this.tamanio)
+                    //esto tiene complejidad máxima de O(this.tamanio)
                     hijosCompletos.addAll(hijos);
                 }
             } 
@@ -115,7 +115,7 @@ public class Trie<K,V> implements Diccionario<K,V>{
         //la función, ejecutada una vez, es O(1)
     }
 
-    public boolean esta(K clave){
+    public boolean esta(K clave){       //O(|Clave|)
         String key = (String) clave;
         
         if (raiz == null) {
@@ -123,7 +123,7 @@ public class Trie<K,V> implements Diccionario<K,V>{
         }
         Nodo actual = raiz;
         
-        for (char c : key.toCharArray()) {
+        for (char c : key.toCharArray()) {  //O(|Clave|)
             int i = (int) c;
             if (actual.siguientes == null) return false;
             
@@ -139,7 +139,7 @@ public class Trie<K,V> implements Diccionario<K,V>{
         return actual.valor != null;
     }
 
-    public void definir(K clave, V valor){
+    public void definir(K clave, V valor){  //O(|Clave|)
         if (!esta(clave)) tamanio+=1;
         
         String key = (String) clave;
@@ -150,7 +150,7 @@ public class Trie<K,V> implements Diccionario<K,V>{
 
         Nodo actual = raiz;
 
-        for (int i = 0; i < key.length(); i++){
+        for (int i = 0; i < key.length(); i++){ //O(|Clave|)
             char l = key.charAt(i);
             int ascii = (int) l;
             
@@ -169,12 +169,12 @@ public class Trie<K,V> implements Diccionario<K,V>{
         actual.valor = valor;
     }
 
-    public V obtener(K clave){
+    public V obtener(K clave){      //O(|Clave|)
         String key = (String) clave;
  
         Nodo actual = raiz;
         
-        for (char c : key.toCharArray()) {
+        for (char c : key.toCharArray()) {   //O(|Clave|)
             int i = (int) c;
             actual = actual.siguientes.get(i);
         }
@@ -183,7 +183,7 @@ public class Trie<K,V> implements Diccionario<K,V>{
 
 
 
-    public void borrar(K clave){
+    public void borrar(K clave){    //O(|Clave|)
         tamanio--;
         if(clave == "") {
             raiz.valor = null;
@@ -198,7 +198,7 @@ public class Trie<K,V> implements Diccionario<K,V>{
         Nodo ultimoNodoUtil = nodoActual;
         int j = (int) key.charAt(0);
 
-        for (int i = 0; i<key.length();i++){
+        for (int i = 0; i<key.length();i++){   //O(|Clave|) 
             int ascii = (int) key.charAt(i);
             nodoActual = nodoActual.siguientes.get(ascii);
 
@@ -215,12 +215,12 @@ public class Trie<K,V> implements Diccionario<K,V>{
             ultimoNodoUtil.siguientes.set(j, null);
         }
     }
-    private boolean tieneHijos(Nodo nodo) {
+    private boolean tieneHijos(Nodo nodo) { //O(1) 
         ArrayList<Nodo> array = nodo.siguientes;
 
         if (array == null) return false;
 
-        for (int i= 0;i<256; i++){
+        for (int i= 0;i<256; i++){      //O(1) por acotado
             if (array.get(i) != null){
                 return true;
             }
@@ -228,15 +228,15 @@ public class Trie<K,V> implements Diccionario<K,V>{
         return false;
     }
     
-    private boolean tieneMasDeUnHijo(Nodo nodo) {
+    private boolean tieneMasDeUnHijo(Nodo nodo) { //O(1)
         ArrayList<Nodo> array = nodo.siguientes;
         int contador = 0;
 
         if (array == null) return false;
 
-        for (int i= 0;i<256; i++){
+        for (int i= 0;i<256; i++){      //O(1) por acotado
             if (array.get(i) != null){
-                contador ++;
+                contador ++;              
                 if (contador>1){
                     return true;
                 }
@@ -244,7 +244,7 @@ public class Trie<K,V> implements Diccionario<K,V>{
         }
         return false;
     }
-    public int tamanio(){
+    public int tamanio(){ // O(1)
         return tamanio;
     }
 
