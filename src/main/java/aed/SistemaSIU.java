@@ -1,4 +1,6 @@
 package aed;
+
+
 public class SistemaSIU {
     /* Para cada SistemaSIU se cumple que:
      *
@@ -13,12 +15,6 @@ public class SistemaSIU {
      *    contienen a dicha Materia (con el mismo nombre que está en el par) y esa Carrera se encuentra
      *    en el Trie CarrerasSIU.
      *    
-     * 
-     * 
-     * 
-     *
-     * 
-     * 
      */
 
 
@@ -91,7 +87,13 @@ public class SistemaSIU {
         Carrera carrera_ = carrerasSIU.obtener(carrera); //obtengo un trie carrera. O(|C|)
         Materia materia_ = carrera_.materias.obtener(materia); //obtengo objeto materia y voy a editar ahi. O(|M|)
         materia_.inscriptos++; //sumo un incripto a la materia. O(1)
-        materia_.estudiantes.add(estudiante); // agrego el estudiante que se inscribio; O(1)
+        materia_.estudiantes.add(estudiante); // agrego el estudiante que se inscribio O(1)
+            /* TODO: ESTO ESTÁ EN MATERIA.JAVA TAMBIÉN. NOSE DONDE PONERLO
+             * Definir una instancia de la clase ArrayList sin ningún valor asociado a su capacidad lo setea a 10.
+             * Esta operación es O(1) ya que, según la especificación, la complejidad de agrandar capacidad es constante.
+             * 
+             * https://docs.oracle.com/javase/8/docs/api/java/util/ArrayList.html#:~:text=Each%20ArrayList%20instance,amortized%20time%20cost.
+             */
         Integer cantIncripciones = estudiantes.obtener(estudiante);//obtengo a cuantas materias esta incripto el estudiante antes de agregarse a la nueva. O(1) (pues las Libretas universitarias estan acotadas)
         estudiantes.definir(estudiante,cantIncripciones +1); // aumento en 1 la cantidad de materias a las que esta inscripto. O(1) (pues las Libretas universitarias estan acotadas)
     }

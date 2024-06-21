@@ -28,12 +28,19 @@ public class Materia {
 
     public Materia(){
         inscriptos = 0;
-        profesores = new int[] {0,0,0,0}; //[profes, JTP, Ayu1, Ayu2]
+        profesores = new int[] {0,0,0,0}; //[profes, JTP, Ay1, Ay2]
         nombres = new ArrayList<>();
         estudiantes = new ArrayList<>();
     }
 
     public void agregarParMateriaCarrera(Carrera nuevaCarrera, String nombreMateria){ //O(1)
         nombres.add(new ParCarreraMateria(nuevaCarrera, nombreMateria));
+            /*
+             * Definir una instancia de la clase ArrayList sin ningún valor asociado a su capacidad lo setea a 10.
+             * Esta operación es O(1) ya que, según la especificación, la complejidad de agrandar capacidad es constante.
+             * 
+             * https://docs.oracle.com/javase/8/docs/api/java/util/ArrayList.html#:~:text=Each%20ArrayList%20instance,amortized%20time%20cost.
+             */
+
     }
 }
