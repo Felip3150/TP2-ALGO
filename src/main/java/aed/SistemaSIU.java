@@ -64,7 +64,6 @@ public class SistemaSIU {
         for(int i=0; i<libretasUniversitarias.length; i++) { //O(cant. estudiantes) = O(E)
             estudiantes.definir(libretasUniversitarias[i], 0);
         }
-        //TODO justificar que esta complejidad es igual a al pedida
         
         /* complejidad final (E = cantidad libretas universitarias)
          ∑  (∑   |c| +|n|) + E          =    ∑  (∑   |c|)        +             ∑ (∑|n|) + E
@@ -88,7 +87,7 @@ public class SistemaSIU {
         Materia materia_ = carrera_.materias.obtener(materia); //obtengo objeto materia y voy a editar ahi. O(|M|)
         materia_.inscriptos++; //sumo un incripto a la materia. O(1)
         materia_.estudiantes.add(estudiante); // agrego el estudiante que se inscribio O(1)
-            /* TODO: ESTO ESTÁ EN MATERIA.JAVA TAMBIÉN. NOSE DONDE PONERLO
+            /* 
              * Definir una instancia de la clase ArrayList sin ningún valor asociado a su capacidad lo setea a 10.
              * Esta operación es O(1) ya que, según la especificación, la complejidad de agrandar capacidad es constante.
              * 
